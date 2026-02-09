@@ -2449,7 +2449,7 @@ table.dataTable thead > tr > td.sorting {
 .fixed-header {
 	background-color: #fff;
 	border-bottom: 1px solid #eaeaea;
-	padding: 1px 15px;
+	padding: 10px 15px;
 }
 .fixed-header .navbar {
 	border: 0 none;
