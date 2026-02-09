@@ -108,9 +108,8 @@
 
 				<li class="nav-item dropdown has-arrow main-drop">
 					<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-						<div class="user-img"><img src="assets/img/profiles/avatar-21.jpg" alt="default-profile">
-							<span class="status online"></span>
-                        </div>
+                        <img class="user-img" src="assets/img/profiles/avatar-21.jpg" alt="default-profile">
+                        <span class="status online"></span>
 						<span>Admin</span>
 					</a>
 					<div class="dropdown-menu">

@@ -1451,6 +1451,8 @@ table.dataTable thead > tr > td.sorting {
     padding: 5px 15px;
 }
 .user-img {
+	height: 36px;
+	width: 36px;
 	display: inline-block;
 	position: relative;
 }
