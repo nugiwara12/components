@@ -1453,6 +1453,7 @@ table.dataTable thead > tr > td.sorting {
 .user-img {
 	height: 36px;
 	width: 36px;
+	border-radius: 100%;
 	display: inline-block;
 	position: relative;
 }
