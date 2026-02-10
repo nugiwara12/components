@@ -9,7 +9,8 @@
     <title>{{ config('app.name', 'Components') }}</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/logo.png') }}">
+    <link rel="shortcut icon" href="{{ URL::to('assets/img/logo.png') }}">
+    <link rel="shortcut icon" href="{{ URL::to('assets/img/logo.png') }}" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
