@@ -54,7 +54,7 @@ new Chart(ctxDevice, {
     data: {
         labels: ['Desktop', 'Mobile', 'Tablet'],
         datasets: [{
-            data: [70.8, 27.2, 2],
+            data: [50, 30, 20],
             backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(34, 197, 94, 0.7)',
                 'rgba(234, 179, 8, 0.7)'
             ],
