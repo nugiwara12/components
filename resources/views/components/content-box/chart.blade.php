@@ -3,61 +3,60 @@
     <!-- Main grid: charts and cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- Page View Line Chart -->
+        <!-- Employee Attendance Chart -->
         <div class="bg-white p-4 rounded-lg shadow flex flex-col">
-            <h2 class="text-lg font-semibold mb-2 text-gray-700">Page View</h2>
+            <h2 class="text-lg font-semibold mb-2 text-gray-700">Employee Attendance</h2>
             <div class="flex-1">
-                <canvas id="pageViewChart" class="w-full h-56"></canvas>
+                <canvas id="attendanceChart" class="w-full h-56"></canvas>
             </div>
+            <div class="mt-4 text-sm text-gray-500">Present vs Absent Employees</div>
         </div>
 
-        <!-- Sessions by Device Donut Chart -->
+        <!-- Leave Status Chart -->
         <div class="bg-white p-4 rounded-lg shadow flex flex-col">
-            <h2 class="text-lg font-semibold mb-2 text-gray-700">Sessions by Device</h2>
+            <h2 class="text-lg font-semibold mb-2 text-gray-700">Leave Status</h2>
             <div class="flex-1">
-                <canvas id="deviceChart" class="w-full h-56"></canvas>
+                <canvas id="leaveChart" class="w-full h-56"></canvas>
             </div>
+            <div class="mt-4 text-sm text-gray-500">Approved vs Pending Leaves</div>
         </div>
 
-        <!-- Combined Card -->
+        <!-- Combined Employee Card -->
         <div class="bg-white p-4 rounded-lg shadow flex flex-col space-y-4">
-
-            <!-- Popular Post Section -->
             <div>
-                <h2 class="text-lg font-semibold mb-2 text-gray-700">Popular Post</h2>
+                <h2 class="text-lg font-semibold mb-2 text-gray-700">Top Performing Employees</h2>
                 <ul class="text-gray-600 text-sm space-y-1">
                     <li class="flex justify-between">
-                        <span>Create an Admin Panel with Vue.js and Tailwind CSS</span>
-                        <span>1,672</span>
+                        <span>John Christoper</span>
+                        <span>95%</span>
                     </li>
                     <li class="flex justify-between">
-                        <span>How To Center a Div</span>
-                        <span>1,423</span>
+                        <span>Maria Santos</span>
+                        <span>92%</span>
                     </li>
                     <li class="flex justify-between">
-                        <span>Let's Star This Project</span>
-                        <span>926</span>
+                        <span>Alex Reyes</span>
+                        <span>90%</span>
                     </li>
                 </ul>
             </div>
 
             <hr class="border-t border-gray-200" />
 
-            <!-- Top Contributor Section -->
             <div>
-                <h2 class="text-lg font-semibold mb-2 text-gray-700">Top Contributor</h2>
+                <h2 class="text-lg font-semibold mb-2 text-gray-700">Most Active Departments</h2>
                 <ul class="text-gray-600 text-sm space-y-1">
                     <li class="flex justify-between">
-                        <span>Seto Kuslaksono</span>
-                        <span>41 / 12</span>
+                        <span>Sales</span>
+                        <span>41 / 50 tasks</span>
                     </li>
                     <li class="flex justify-between">
-                        <span>Some Dude</span>
-                        <span>22 / 15</span>
+                        <span>HR</span>
+                        <span>38 / 45 tasks</span>
                     </li>
                     <li class="flex justify-between">
-                        <span>It Could Be You</span>
-                        <span>12 / 4</span>
+                        <span>IT Support</span>
+                        <span>32 / 40 tasks</span>
                     </li>
                 </ul>
             </div>
