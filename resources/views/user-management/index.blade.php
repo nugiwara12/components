@@ -137,7 +137,14 @@
 
                 row.innerHTML = `
                     <td class="px-6 py-6">${user.employee_id}</td>
-                    <td class="px-6 py-6">${user.name}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-4">
+                            <img src="${user.avatar_image ? `/` + user.avatar_image : '/avatar/default.png'}" 
+                                alt="Avatar" 
+                                class="w-10 h-10 rounded-full object-cover  ">
+                            <span class="font-medium text-wrap text-gray-800">${user.name}</span>
+                        </div>
+                    </td>                    
                     <td class="px-6 py-6">${user.email}</td>
                     <td class="px-6 py-6">${user.mobile_number}</td>
                     <td class="px-6 py-6">${user.join_date}</td>
@@ -220,6 +227,18 @@
             }
         });
 
+        // Reset avatar preview for add user
+        const avatarPreview = modal.querySelector('#avatarPreview');
+        const avatarPlaceholder = modal.querySelector('#avatarPlaceholder');
+        const avatarInput = modal.querySelector('#avatar_image');
+
+        if (avatarPreview && avatarPlaceholder) {
+            avatarPreview.src = '';
+            avatarPreview.classList.add('hidden');
+            avatarPlaceholder.classList.remove('hidden');
+        }
+        if (avatarInput) avatarInput.value = ''; // clear file input
+
         // Remove any data attributes (like editing user ID)
         modal.removeAttribute('data-userid');
 
@@ -227,7 +246,6 @@
         openModal(modalId);
 
         // Clear any previous errors
-        modal.classList.remove('hidden');
         window.attachValidationClear(modal);
 
         // Load roles dynamically inside the modal
@@ -239,8 +257,6 @@
             const res = await fetch("{{ route('getEmployeeId') }}");
             const data = await res.json();
             const nextId = data.employee_id || ''; // e.g., 'EMP002'
-
-            // Set it in the input
             window.setEmployeeId(nextId);
         } catch (err) {
             console.error('Could not fetch employee ID', err);
@@ -248,14 +264,70 @@
         }
     };
 
+    // Edit user function
+    window.editUser = async function(user) {
+        const modal = document.getElementById('addUserModal');
+
+        // Fill text fields
+        ['name','email','mobile_number','join_date','employee_id'].forEach(id => {
+            const input = document.getElementById(id);
+            if(input) input.value = user[id] || '';
+        });
+
+        // Clear password fields
+        document.getElementById('password').value = '';
+        document.getElementById('password_confirmation').value = '';
+
+        // Handle avatar preview
+        const avatarPreview = document.getElementById('avatarPreview');
+        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        const avatarInput = document.getElementById('avatar_image');
+                
+        if(user.avatar_image) {
+            avatarPreview.src = `/${user.avatar_image}`; // remove extra /avatar/
+            avatarPreview.classList.remove('hidden');
+            avatarPlaceholder.classList.add('hidden');
+        } else {
+            avatarPreview.src = '';
+            avatarPreview.classList.add('hidden');
+            avatarPlaceholder.classList.remove('hidden');
+        }
+
+        // Load roles dynamically and select user role
+        const roleSelect = document.getElementById('role');
+        if(roleSelect) {
+            await window.loadRoles(); // wait until roles are loaded
+
+            // Now select the user's role
+            roleSelect.value = user.role || '';
+
+            // Optional: fallback if role not found
+            if(roleSelect.value !== user.role) {
+                const option = document.createElement('option');
+                option.value = user.role;
+                option.textContent = user.role_name || user.role;
+                option.selected = true;
+                roleSelect.appendChild(option);
+            }
+        }
+
+        // Set modal to edit mode
+        modal.dataset.userid = user.id;
+        document.getElementById('modalTitle').textContent = 'Edit User';
+        document.getElementById('modalActionBtn').textContent = 'Update User';
+        document.getElementById('modalActionBtn').onclick = () => submitEditUser(user.id);
+
+        // Open modal
+        openModal('addUserModal');
+    };
+
     // Add user && Edit Users
     window.submitAddUser = async function () {
 
         const modal = document.getElementById('addUserModal');
         const userId = modal.dataset.userid;
-
         const inputs = modal.querySelectorAll('input, select');
-        const payload = {};
+        const formData = new FormData(); // Use FormData for file uploads
 
         // Clear old errors
         modal.querySelectorAll('.error-text').forEach(el => el.remove());
@@ -266,27 +338,30 @@
             if (!input.name) return;
 
             if (input.type === 'checkbox' || input.type === 'radio') {
-                if (input.checked) payload[input.name] = input.value;
+                if (input.checked) formData.append(input.name, input.value);
+            } else if (input.type === 'file') {
+                if (input.files.length > 0) {
+                    formData.append(input.name, input.files[0]); // append file
+                }
             } else {
-                payload[input.name] = input.value.trim();
+                formData.append(input.name, input.value.trim());
             }
         });
 
         let url = userId ? `/updateUser/${userId}` : '/addUser';
         let method = 'post';
 
-        if (userId) payload._method = 'PUT';
+        if (userId) formData.append('_method', 'PUT');
 
         try {
             const response = await axios({
                 method: method,
                 url: url,
-                data: payload,
-                headers: { 'Accept': 'application/json' },
+                data: formData,
+                headers: { 'Accept': 'application/json', 'Content-Type': 'multipart/form-data' }, // important
             });
 
             if (response.data.status) {
-
                 showToast(response.data.message, 'success');
 
                 modal.removeAttribute('data-userid');
@@ -332,6 +407,23 @@
                 showToast('Something went wrong.', 'error');
                 console.error(error);
             }
+        }
+    };
+
+    // Preview Avatar
+    window.previewAvatarImage = function(event) {
+        const preview = document.getElementById('avatarPreview');
+        const placeholder = document.getElementById('avatarPlaceholder');
+        const file = event.target.files[0];
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
         }
     };
 </script>

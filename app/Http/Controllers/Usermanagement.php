@@ -49,6 +49,7 @@ class Usermanagement extends Controller
                'users.id',
                'users.employee_id',
                'users.name',
+               'users.avatar_image',
                'users.email',
                'users.mobile_number',
                'users.join_date',
@@ -79,7 +80,17 @@ class Usermanagement extends Controller
          'password'      => 'required|min:6|confirmed',
          'mobile_number' => 'required|string|regex:/^09\d{9}$/|unique:users,mobile_number',
          'join_date'     => 'required|date',
+         'avatar_image'  => 'required|image|mimes:jpg,jpeg,png,gif|max:2048', // validate avatar
       ]);
+
+      // Handle avatar upload
+      $avatarPath = null;
+      if ($request->hasFile('avatar_image')) {
+         $avatarFile = $request->file('avatar_image');
+         $filename = time() . '_' . $avatarFile->getClientOriginalName();
+         $avatarFile->move(public_path('avatar'), $filename); // save to public/avatar
+         $avatarPath = 'avatar/' . $filename; // store relative path in DB
+      }
 
       // Create user with auto-generated employee_id
       $user = User::create([
@@ -90,6 +101,7 @@ class Usermanagement extends Controller
          'password'      => Hash::make($request->password),
          'mobile_number' => $request->mobile_number,
          'join_date'     => $request->join_date,
+         'avatar_image'  => $avatarPath, // save avatar path
       ]);
 
       return response()->json([

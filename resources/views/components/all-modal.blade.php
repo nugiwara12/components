@@ -12,6 +12,25 @@
         <!-- Form Fields (scrollable) -->
         <div class="p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+            <!-- Avatar Upload (rectangle like old layout) -->
+            <div class="col-span-1 sm:col-span-2">
+                <label class="block text-sm font-medium text-gray-700" for="avatar_image">
+                    Avatar Image
+                    <span class="text-gray-400 italic">(Upload an Profile Image)</span>
+                </label>
+
+                <div id="avatarDropzone"
+                    class="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-cyan-500 transition"
+                    onclick="document.getElementById('avatar_image').click()">
+                    <img id="avatarPreview" class="object-cover w-full h-full p-2 hidden" />
+                    <span id="avatarPlaceholder" class="text-gray-400 absolute text-center">Click to upload image</span>
+                </div>
+
+                <input id="avatar_image" type="file" name="avatar_image" class="hidden" accept="image/*"
+                    onchange="previewAvatarImage(event)" />
+                <div id="avatarFileName" class="mt-2 text-gray-700 text-sm"></div>
+            </div>
+
             <!-- Name -->
             <div class="col-span-1">
                 <x-input-label for="name" :value="__('Name')" />
@@ -29,14 +48,14 @@
             <!-- Mobile Number -->
             <div class="col-span-1">
                 <x-input-label for="mobile_number" :value="__('Mobile Number')" />
-                <x-text-input id="mobile_number" class="block w-full mt-1" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" type="text" name="mobile_number" required autofocus />
+                <x-text-input id="mobile_number" class="block w-full mt-1" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" type="text" name="mobile_number" required />
                 <x-input-error :messages="$errors->get('mobile_number')" class="mt-1" />
             </div>
 
             <!-- Join Date -->
             <div class="col-span-1">
                 <x-input-label for="join_date" :value="__('Join Date')" />
-                <x-text-input id="join_date" class="block w-full mt-1" type="date" name="join_date" required autofocus />
+                <x-text-input id="join_date" class="block w-full mt-1" type="date" name="join_date" required />
                 <x-input-error :messages="$errors->get('join_date')" class="mt-1" />
             </div>
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('mobile_number')->unique();
             $table->date('join_date');
+            $table->string('avatar_image');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role');
             $table->tinyInteger('status')->default(1);
