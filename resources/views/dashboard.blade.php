@@ -11,6 +11,7 @@
             <x-content-box.chart />
             <x-content-box.savings />
             <x-content-box.statistic />
+            <x-content-box.tables />
         </div>
     </div>
 </x-app-layout>
