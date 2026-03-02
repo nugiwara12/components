@@ -6,9 +6,11 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="w-full mx-auto">
+        <div class="w-full mx-auto p-4 space-y-4">
             <x-content-box.panel />
             <x-content-box.chart />
+            <x-content-box.savings />
+            <x-content-box.statistic />
         </div>
     </div>
 </x-app-layout>

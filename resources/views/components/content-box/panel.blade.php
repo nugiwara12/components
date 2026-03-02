@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 whitespace-nowrap">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 whitespace-nowrap">
 
     <!-- Panel 1: Total Employees -->
     <div class="relative group bg-white rounded-xl p-5 shadow overflow-hidden cursor-pointer">
