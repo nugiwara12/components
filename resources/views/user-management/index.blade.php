@@ -284,7 +284,9 @@
         const avatarInput = document.getElementById('avatar_image');
                 
         if(user.avatar_image) {
-            avatarPreview.src = `/${user.avatar_image}`; // remove extra /avatar/
+            avatarPreview.src = user.avatar_image.startsWith('/') 
+                ? user.avatar_image 
+                : '/' + user.avatar_image;
             avatarPreview.classList.remove('hidden');
             avatarPlaceholder.classList.add('hidden');
         } else {
@@ -298,14 +300,14 @@
         if(roleSelect) {
             await window.loadRoles(); // wait until roles are loaded
 
-            // Now select the user's role
-            roleSelect.value = user.role || '';
+            // Use role_id instead of role
+            roleSelect.value = user.role_id || '';
 
-            // Optional: fallback if role not found
-            if(roleSelect.value !== user.role) {
+            // Optional fallback if role not in options
+            if(!Array.from(roleSelect.options).some(opt => opt.value == user.role_id)) {
                 const option = document.createElement('option');
-                option.value = user.role;
-                option.textContent = user.role_name || user.role;
+                option.value = user.role_id;
+                option.textContent = user.role_name || 'Unknown Role';
                 option.selected = true;
                 roleSelect.appendChild(option);
             }
@@ -315,7 +317,6 @@
         modal.dataset.userid = user.id;
         document.getElementById('modalTitle').textContent = 'Edit User';
         document.getElementById('modalActionBtn').textContent = 'Update User';
-        document.getElementById('modalActionBtn').onclick = () => submitEditUser(user.id);
 
         // Open modal
         openModal('addUserModal');

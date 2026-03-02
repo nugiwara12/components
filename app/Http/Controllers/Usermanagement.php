@@ -54,6 +54,7 @@ class Usermanagement extends Controller
                'users.mobile_number',
                'users.join_date',
                'users.status',
+               'users.role_id',
                'roles.name as role_name'
          )
          ->orderBy('users.id', 'desc')
@@ -122,30 +123,16 @@ class Usermanagement extends Controller
          ], 404);
       }
 
-      // Merge missing request fields with existing DB values
-      $request->merge([
-         'name' => $request->name ?: $user->name,
-         'email' => $request->email ?: $user->email,
-         'role' => $request->role ?: $user->role,
-         'business_name' => $request->business_name ?: $user->business_name,
-         'company_email' => $request->company_email ?: $user->company_email,
-         'company_contact' => $request->company_contact ?: $user->company_contact,
-      ]);
-
       // Validation rules
       $rules = [
          'name' => 'bail|required|string|max:255',
          'email' => "bail|required|email|unique:users,email,{$id}",
-         'role' => 'bail|required|in:super_admin,admin,user,pharmacy',
+         'role' => 'bail|required|exists:roles,id',
          'password' => 'nullable|min:6|confirmed',
+         'mobile_number' => "required|string|regex:/^09\d{9}$/|unique:users,mobile_number,{$id}",
+         'join_date' => 'required|date',
+         'avatar_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // optional image
       ];
-
-      if ($request->role === 'pharmacy') {
-         $rules['business_name'] = 'bail|required|string|max:255';
-         $rules['company_email'] = 'bail|required|email';
-         $rules['company_contact'] = 'bail|required|string|regex:/^09\d{9}$/';
-         $rules['proof_legitimacy'] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-      }
 
       $validator = Validator::make($request->all(), $rules);
 
@@ -159,41 +146,25 @@ class Usermanagement extends Controller
       // Update basic fields
       $user->name = $request->name;
       $user->email = $request->email;
-      $user->role = $request->role;
+      $user->role_id = $request->role;
+      $user->mobile_number = $request->mobile_number;
+      $user->join_date = $request->join_date;
 
       if ($request->filled('password')) {
          $user->password = Hash::make($request->password);
       }
 
-      // Update pharmacy fields
-      if ($request->role === 'pharmacy') {
-         $user->business_name = $request->business_name;
-         $user->company_email = $request->company_email;
-         $user->company_contact = $request->company_contact;
-
-         if ($request->hasFile('proof_legitimacy')) {
-               // Delete old file if exists
-               if ($user->proof_legitimacy && file_exists(public_path($user->proof_legitimacy))) {
-                  @unlink(public_path($user->proof_legitimacy));
-               }
-
-               // Save new file
-               $file = $request->file('proof_legitimacy');
-               $filename = time() . '_' . $file->getClientOriginalName();
-               $file->move(public_path('proofs'), $filename);
-               $user->proof_legitimacy = 'proofs/' . $filename;
+      // Handle avatar replacement
+      if ($request->hasFile('avatar_image')) {
+         // Delete old avatar if exists
+         if ($user->avatar_image && file_exists(public_path($user->avatar_image))) {
+               @unlink(public_path($user->avatar_image));
          }
-      } else {
-         // Clear pharmacy fields if role changed
-         $user->business_name = null;
-         $user->company_email = null;
-         $user->company_contact = null;
 
-         // Delete old file if exists
-         if ($user->proof_legitimacy && file_exists(public_path($user->proof_legitimacy))) {
-               @unlink(public_path($user->proof_legitimacy));
-         }
-         $user->proof_legitimacy = null;
+         $avatarFile = $request->file('avatar_image');
+         $filename = time() . '_' . $avatarFile->getClientOriginalName();
+         $avatarFile->move(public_path('avatar'), $filename);
+         $user->avatar_image = 'avatar/' . $filename;
       }
 
       $user->save();
@@ -205,11 +176,10 @@ class Usermanagement extends Controller
                'id' => $user->id,
                'name' => $user->name,
                'email' => $user->email,
-               'role' => $user->role,
-               'business_name' => $user->business_name,
-               'company_email' => $user->company_email,
-               'company_contact' => $user->company_contact,
-               'proof_legitimacy' => $user->proof_legitimacy ? asset($user->proof_legitimacy) : null,
+               'role' => $user->role_id,
+               'mobile_number' => $user->mobile_number,
+               'join_date' => $user->join_date,
+               'avatar_image' => $user->avatar_image ? asset($user->avatar_image) : null,
          ]
       ], 200);
    }

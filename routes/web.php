@@ -25,3 +25,4 @@ Route::get('/getRoles', [Usermanagement::class, 'getRoles'])->name('getRoles');
 Route::get('/userDetails', [Usermanagement::class, 'userDetails'])->name('userDetails');
 Route::get('/getEmployeeId', [Usermanagement::class, 'getEmployeeId'])->name('getEmployeeId');
 Route::post('/addUser', [Usermanagement::class, 'addUser'])->name('addUser');
+Route::put('/updateUser/{id}', [Usermanagement::class, 'UpdateUser'])->name('updateUser');
