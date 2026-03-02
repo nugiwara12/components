@@ -1,7 +1,7 @@
 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
     <!-- Card -->
     <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex justify-between mb-4">
+        <div class="flex justify-between mb-4 whitespace-nowrap gap-4">
             <!-- Left: Title -->
             <div class="text-left">
                 <x-search-input id="searchInput" placeholder="Search users" class="w-full sm:w-full" autocomplete="off" />
@@ -31,7 +31,7 @@
                             <th class="text-center px-6 py-6">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" class="divide-y divide-gray-200">
+                    <tbody id="userTableBody" class="divide-y divide-gray-200">
                         <!-- Rows inserted via JavaScript -->
                     </tbody>
                 </table>

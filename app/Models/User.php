@@ -20,7 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        // 'role',
+        'employee_id',
         'role_id',
         'mobile_number',
         'join_date',
@@ -53,5 +53,14 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public static function generateEmployeeId(): string
+    {
+        $last = self::orderBy('id', 'desc')->first();
+
+        return $last
+            ? 'EMP' . str_pad((int)substr($last->employee_id, 3) + 1, 3, '0', STR_PAD_LEFT)
+            : 'EMP001';
     }
 }

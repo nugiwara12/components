@@ -21,3 +21,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::get('/user-management', [Usermanagement::class, 'index'])->name('user-management.index');
+Route::get('/getRoles', [Usermanagement::class, 'getRoles'])->name('getRoles');
+Route::get('/userDetails', [Usermanagement::class, 'userDetails'])->name('userDetails');
+Route::get('/getEmployeeId', [Usermanagement::class, 'getEmployeeId'])->name('getEmployeeId');
+Route::post('/addUser', [Usermanagement::class, 'addUser'])->name('addUser');
