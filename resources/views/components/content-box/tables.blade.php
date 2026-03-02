@@ -6,7 +6,7 @@
         <!-- Leaves -->
         <div class="bg-white border rounded-xl shadow p-4 flex flex-col h-full">
             <h2 class="text-lg font-semibold mb-4">Leaves</h2>
-            <div class="overflow-x-auto flex-1">
+            <div class="overflow-x-auto flex-1 mb-4">
                 <table class="w-full text-left table-auto">
                     <thead>
                         <tr class="border-b">
@@ -52,7 +52,7 @@
         <!-- Payments -->
         <div class="bg-white border rounded-xl shadow p-4 flex flex-col h-full">
             <h2 class="text-lg font-semibold mb-4">Payments</h2>
-            <div class="overflow-x-auto flex-1">
+            <div class="overflow-x-auto flex-1 mb-4">
                 <table class="w-full text-left table-auto">
                     <thead>
                         <tr class="border-b">
