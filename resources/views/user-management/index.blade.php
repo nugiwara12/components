@@ -20,8 +20,9 @@
 
 <script>
     // Handle user search input with debounce
-    const searchInput = document.getElementById('searchInput');
     let searchTimeout;
+    
+    const searchInput = document.getElementById('searchInput');
 
     // Modal Functions
     window.openModal = function (id) {
