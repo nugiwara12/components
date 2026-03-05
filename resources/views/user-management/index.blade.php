@@ -40,6 +40,7 @@
         window.clearValidationErrors(modal);
     }
 
+    // Clear validation errors
     window.clearValidationErrors = function(modal) {
         if (!modal) return;
 
@@ -48,6 +49,29 @@
 
         // Remove input error classes
         modal.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    };
+
+    // Enable real-time validation removal on input/change
+    window.attachValidationClear = function(modal) {
+        if (!modal) return;
+
+        const inputs = modal.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            // Remove error on typing (input event) or selection change
+            input.addEventListener('input', () => removeError(input));
+            input.addEventListener('change', () => removeError(input));
+        });
+
+        function removeError(input) {
+            // Remove red border
+            input.classList.remove('input-error');
+
+            // Remove associated error message (if any)
+            const next = input.nextElementSibling;
+            if (next && next.classList.contains('error-text')) {
+                next.remove();
+            }
+        }
     };
 
     // Load Roles 
@@ -205,6 +229,9 @@
 
         // Clear any previous errors
         window.clearValidationErrors(modal);
+
+        // Clear any previous form data (real time clear validations)
+        window.attachValidationClear(modal);
 
         // Set modal title and action button
         const title = modal.querySelector('#modalTitle');
