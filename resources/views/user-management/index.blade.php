@@ -411,6 +411,79 @@
         }
     };
 
+    // Open Delete Modal with dynamic user info
+    window.deleteUser = function(userId) {
+        const modal = document.getElementById('deleteModal');
+        const title = document.getElementById('deleteModalTitle');
+        const message = document.getElementById('deleteModalMessage');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+        if (!modal || !title || !message || !confirmBtn) return;
+
+        title.textContent = 'Confirm Delete';
+        message.textContent = 'Are you sure you want to delete?';
+
+        modal.classList.remove('hidden');
+
+        confirmBtn.onclick = async () => {
+            try {
+                const res = await fetch(`/deleteUser/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = res.ok ? await res.json().catch(() => ({})) : {};
+                showToast(res.ok ? data.message || 'Deleted successfully' : 'Failed to delete');
+            } catch (error) {
+                console.error(error);
+                showToast('Something went wrong');
+            } finally {
+                closeModal('deleteModal');
+                window.loadUsers();
+            }
+        };
+    };
+
+    // Open Restore Modal with dynamic user info
+    window.restoreUser = function(userId) {
+        const modal = document.getElementById('restore');
+        const title = document.getElementById('restoreTitle');
+        const message = document.getElementById('restoreMessage');
+        const confirmBtn = modal.querySelector('button.bg-green-600'); // Approve button
+
+        if (!modal || !title || !message || !confirmBtn) return;
+
+        title.textContent = 'Confirm Restore';
+        message.textContent = 'Are you sure you want to restore this user?';
+
+        modal.classList.remove('hidden');
+
+        // Remove previous click listener safely
+        confirmBtn.onclick = async () => {
+            try {
+                const res = await fetch(`/restoreUser/${userId}`, {
+                    method: 'POST', // or PUT depending on your route
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = res.ok ? await res.json().catch(() => ({})) : {};
+                showToast(res.ok ? data.message || 'User restored successfully' : 'Failed to restore');
+            } catch (error) {
+                console.error(error);
+                showToast('Something went wrong');
+            } finally {
+                closeModal('restore');
+                window.loadUsers(); // reload users or update table
+            }
+        };
+    };
+
     // Preview Avatar
     window.previewAvatarImage = function(event) {
         const preview = document.getElementById('avatarPreview');

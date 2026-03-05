@@ -26,3 +26,6 @@ Route::get('/userDetails', [Usermanagement::class, 'userDetails'])->name('userDe
 Route::get('/getEmployeeId', [Usermanagement::class, 'getEmployeeId'])->name('getEmployeeId');
 Route::post('/addUser', [Usermanagement::class, 'addUser'])->name('addUser');
 Route::put('/updateUser/{id}', [Usermanagement::class, 'UpdateUser'])->name('updateUser');
+Route::delete('/deleteUser/{id}', [Usermanagement::class, 'deleteUser'])->name('deleteUser');
+Route::post('/restoreUser/{id}', [Usermanagement::class, 'restoreUser'])->name('restoreUser');
+// Route::get('/activity-logs', [Usermanagement::class, 'activityLogs'])->name('activity-logs');

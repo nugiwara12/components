@@ -183,4 +183,32 @@ class Usermanagement extends Controller
          ]
       ], 200);
    }
+
+   public function deleteUser($id)
+   {
+      $user = User::find($id);
+
+      if (!$user) {
+         return response()->json(['status' => false, 'message' => 'User not found.'], 404);
+      }
+
+      // Soft delete: just mark inactive
+      $user->status = 0;
+      $user->save();
+
+      return response()->json(['status' => true, 'message' => 'User deleted successfully.']);
+   }
+
+   public function restoreUser($id)
+   {
+      $user = User::find($id);
+      if (!$user) {
+         return response()->json(['status' => false, 'message' => 'User not found.'], 404);
+      }
+
+      $user->status = 1;
+      $user->save();
+
+      return response()->json(['status' => true, 'message' => 'User restored successfully.']);
+   }
 }

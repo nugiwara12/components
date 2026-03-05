@@ -102,15 +102,30 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div id="deleteUserModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+<!-- Reusable Delete Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md text-center shadow-lg">
-        <h2 class="text-lg font-semibold uppercase text-gray-800 mb-4">Confirm Delete</h2>
-        <p class="text-gray-600 mb-6">Are you sure you want to delete this user?</p>
+        <h2 id="deleteModalTitle" class="text-lg font-semibold uppercase text-gray-800 mb-4"></h2>
+        <p id="deleteModalMessage" class="text-gray-600 mb-6"></p>
         <div class="flex justify-center gap-4">
-            <button onclick="closeModal('deleteUserModal')" class="px-4 py-2 rounded-md border text-gray-700">Cancel</button>
-            <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Delete</button>
+            <button onclick="closeModal('deleteModal')" class="px-4 py-2 rounded-md border text-gray-700">
+                Cancel
+            </button>
+            <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                Delete
+            </button>
         </div>
     </div>
 </div>
 
+<!-- Restore Deleted Confirmation Modal -->
+<div id="restore" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+        <h2 id="restoreTitle" class="text-lg font-semibold uppercase mb-4"></h2>
+        <p id="restoreMessage" class="mb-6 text-gray-700"></p>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeModal('restore')" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+            <button onclick="confirmApprove()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Approve</button>
+        </div>
+    </div>
+</div>
