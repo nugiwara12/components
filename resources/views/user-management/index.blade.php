@@ -19,6 +19,10 @@
 <x-pagination />
 
 <script>
+    // Handle user search input with debounce
+    const searchInput = document.getElementById('searchInput');
+    let searchTimeout;
+
     // Modal Functions
     window.openModal = function (id) {
         const modal = document.getElementById(id);
@@ -31,31 +35,19 @@
         if (!modal) return;
         modal.classList.add('hidden');
         modal.removeAttribute('data-userid');
+
+        // Clear validation errors first
+        window.clearValidationErrors(modal);
     }
 
-    window.attachValidationClear = function (modal) {
-        const inputs = modal.querySelectorAll('input, select, textarea');
+    window.clearValidationErrors = function(modal) {
+        if (!modal) return;
 
-        inputs.forEach(input => {
-            const validateField = function () {
-                const value = input.value.trim();
+        // Remove all error messages
+        modal.querySelectorAll('.error-text').forEach(el => el.remove());
 
-                if (value !== '') {
-
-                    input.classList.remove('input-error');
-
-                    const errorText = input.parentNode.querySelector('.error-text');
-
-                    if (errorText) {
-                        errorText.remove();
-                    }
-                }
-            };
-
-            // Real-time validation
-            input.addEventListener('input', validateField);
-            input.addEventListener('change', validateField);
-        });
+        // Remove input error classes
+        modal.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
     };
 
     // Load Roles 
@@ -104,10 +96,10 @@
     };
 
     // Get Users
-    window.loadUsers = async function (page = 1, perPage = 10) {
+    window.loadUsers = async function (page = 1, perPage = 10, search = '') {
         try {
             const response = await axios.get('/userDetails', {
-                params: { page: page, per_page: perPage }
+                params: { page, per_page: perPage, search } // pass search term to backend
             });
 
             const { users, pagination } = response.data;
@@ -139,16 +131,16 @@
                     <td class="px-6 py-6">${user.employee_id}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center space-x-4">
-                            <img src="${user.avatar_image ? `/` + user.avatar_image : '/avatar/default.png'}" 
+                            <img src="${user.avatar_image ? '/' + user.avatar_image : '/avatar/default.png'}" 
                                 alt="Avatar" 
-                                class="w-10 h-10 rounded-full object-cover  ">
+                                class="w-10 h-10 rounded-full object-cover">
                             <span class="font-medium text-wrap text-gray-800">${user.name}</span>
                         </div>
                     </td>                    
                     <td class="px-6 py-6">${user.email}</td>
+                    <td class="px-6 py-6 capitalize">${user.role_name || '-'}</td>
                     <td class="px-6 py-6">${user.mobile_number}</td>
                     <td class="px-6 py-6">${user.join_date}</td>
-                    <td class="px-6 py-6 capitalize">${user.role_name || '-'}</td>
                     <td class="px-6 py-6">
                         <span class="${
                             user.status === 1
@@ -194,7 +186,7 @@
                 last_page: pagination.last_page,
                 per_page: pagination.per_page,
                 total: pagination.total,
-                onPageChange: loadUsers
+                onPageChange: (p) => loadUsers(p, perPage, search) // keep search term on pagination
             });
 
         } catch (error) {
@@ -210,6 +202,9 @@
     window.openAddUser = async function (modalId = 'addUserModal') {
         const modal = document.getElementById(modalId);
         if (!modal) return;
+
+        // Clear any previous errors
+        window.clearValidationErrors(modal);
 
         // Set modal title and action button
         const title = modal.querySelector('#modalTitle');
@@ -244,9 +239,6 @@
 
         // Open the modal
         openModal(modalId);
-
-        // Clear any previous errors
-        window.attachValidationClear(modal);
 
         // Load roles dynamically inside the modal
         const roleSelect = modal.querySelector('select[name="role"]');
@@ -324,11 +316,15 @@
 
     // Add user && Edit Users
     window.submitAddUser = async function () {
-
         const modal = document.getElementById('addUserModal');
+        const submitBtn = modal.querySelector('#modalActionBtn'); // get the submit button
         const userId = modal.dataset.userid;
         const inputs = modal.querySelectorAll('input, select');
         const formData = new FormData(); // Use FormData for file uploads
+
+        // Disable button to prevent multiple clicks
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
         // Clear old errors
         modal.querySelectorAll('.error-text').forEach(el => el.remove());
@@ -351,7 +347,6 @@
 
         let url = userId ? `/updateUser/${userId}` : '/addUser';
         let method = 'post';
-
         if (userId) formData.append('_method', 'PUT');
 
         try {
@@ -359,7 +354,7 @@
                 method: method,
                 url: url,
                 data: formData,
-                headers: { 'Accept': 'application/json', 'Content-Type': 'multipart/form-data' }, // important
+                headers: { 'Accept': 'application/json', 'Content-Type': 'multipart/form-data' },
             });
 
             if (response.data.status) {
@@ -374,40 +369,31 @@
             }
         } catch (error) {
             if (error.response && error.response.status === 422) {
-
                 const errors = error.response.data.errors;
-
                 showToast('Please fix the required field.', 'error');
 
                 // SHOW ONLY FIRST ERROR
                 for (const input of inputs) {
-
                     const field = input.name;
-
                     if (errors[field]) {
-
-                        // add red border
                         input.classList.add('input-error');
 
-                        // create error text
                         const errorText = document.createElement('p');
                         errorText.className = 'error-text text-red-500 text-xs mt-1';
                         errorText.innerText = errors[field][0];
-
-                        // insert below input
                         input.insertAdjacentElement('afterend', errorText);
-
-                        // focus input
                         input.focus();
-
-                        // STOP after first error
-                        break;
+                        break; // stop after first error
                     }
                 }
             } else {
                 showToast('Something went wrong.', 'error');
                 console.error(error);
             }
+        } finally {
+            // Re-enable the button
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     };
 
@@ -426,6 +412,10 @@
         modal.classList.remove('hidden');
 
         confirmBtn.onclick = async () => {
+            // Disable button to prevent multiple clicks
+            confirmBtn.disabled = true;
+            confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
             try {
                 const res = await fetch(`/deleteUser/${userId}`, {
                     method: 'DELETE',
@@ -441,6 +431,10 @@
                 console.error(error);
                 showToast('Something went wrong');
             } finally {
+                // Re-enable button
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
                 closeModal('deleteModal');
                 window.loadUsers();
             }
@@ -461,8 +455,11 @@
 
         modal.classList.remove('hidden');
 
-        // Remove previous click listener safely
         confirmBtn.onclick = async () => {
+            // Disable button to prevent multiple clicks
+            confirmBtn.disabled = true;
+            confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
             try {
                 const res = await fetch(`/restoreUser/${userId}`, {
                     method: 'POST', // or PUT depending on your route
@@ -478,11 +475,24 @@
                 console.error(error);
                 showToast('Something went wrong');
             } finally {
+                // Re-enable button
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
                 closeModal('restore');
                 window.loadUsers(); // reload users or update table
             }
         };
     };
+    
+    // Search Function
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            // Load page 1 whenever the search term changes
+            window.loadUsers(1, 10, this.value.trim());
+        }, 300); // 300ms debounce
+    });
 
     // Preview Avatar
     window.previewAvatarImage = function(event) {

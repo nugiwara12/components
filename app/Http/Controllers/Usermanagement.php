@@ -42,9 +42,9 @@ class Usermanagement extends Controller
    public function userDetails(Request $request)
    {
       $perPage = (int) $request->get('per_page', 10);
+      $search = $request->get('search', ''); // Get search term
 
-      // Get all users with their roles
-      $users = User::leftJoin('roles', 'users.role_id', '=', 'roles.id')
+      $query = User::leftJoin('roles', 'users.role_id', '=', 'roles.id')
          ->select(
                'users.id',
                'users.employee_id',
@@ -57,8 +57,20 @@ class Usermanagement extends Controller
                'users.role_id',
                'roles.name as role_name'
          )
-         ->orderBy('users.id', 'desc')
-         ->paginate($perPage);
+         ->orderBy('users.id', 'desc');
+
+      // Apply search if provided
+      if ($search) {
+         $query->where(function($q) use ($search) {
+               $q->where('users.name', 'like', "%{$search}%")
+               ->orWhere('users.email', 'like', "%{$search}%")
+               ->orWhere('roles.name', 'like', "%{$search}%")
+               ->orWhere('users.mobile_number', 'like', "%{$search}%")
+               ->orWhere('users.join_date', 'like', "%{$search}%");
+         });
+      }
+
+      $users = $query->paginate($perPage);
 
       return response()->json([
          'status' => true,
